@@ -11,32 +11,56 @@ library(tidyverse)
 library(knitr)
 ```
 
-```{r}
+# Problem 1
+
+```{r,message=FALSE,out.width="100%"}
 library(p8105.datasets)
 data("instacart") 
 df_insta=data.frame(instacart)|>
-  group_by(aisle_id)|>
+  group_by(aisle)|>
   summarize(n_obs=n())|>
   arrange(desc(n_obs))
 
 plot=df_insta|>
   filter(n_obs>10000)|>
-  ggplot(aes(x=aisle_id,y=n_obs))+geom_point()+
-  xlab("Aisle Id") +
-  ylab("Number of items") +
-  theme_bw()
+  ggplot(aes(x=aisle,y=n_obs))+geom_point()+
+  xlab("Aisle") +
+  ylab("Number of ordered items") +
+  theme(axis.text.x=element_text(angle=70,hjust=1))
 print(plot)
 
-table=data.frame(instacart)|>
+item_table=data.frame(instacart)|>
   filter(aisle %in% c("dog food care","packaged vegetables fruits","baking ingredients"))|>
   group_by(aisle)|>
   count(product_id,name="n_item")|>
   arrange(aisle,desc(n_item))|>
   slice_head(n=3)|>
-  rename("Aisle"="aisle",
-         "Product ID"="product_id",
-         "Number of Items"="n_item")
-knitr::kable(table,digits=0)
+  pivot_wider(
+    id_cols=product_id,
+    names_from=aisle,
+    values_from=n_item,
+    names_prefix="# of Items in "
+  )
+knitr::kable(item_table,digits=0)
+
+hour_table=data.frame(instacart)|>
+  filter(product_name %in% c("Pink Lady Apples","Coffee Ice Cream"))|>
+  arrange(product_name,order_dow,order_hour_of_day)|>
+  group_by(product_name,order_dow)|>
+  summarize(
+    mean_hour=mean(order_hour_of_day)
+  )|>
+  pivot_wider(
+    id_cols=order_dow,
+    names_from=product_name,
+    values_from=mean_hour,
+    names_prefix="Mean order hour of day of "
+  )|>
+  rename("Day of Week"="order_dow")
+knitr::kable(hour_table,digits=3)
+
 ```
 
 1. There are `r nrow(df_insta)` aisles and most items are ordered from aisle number `r df_insta[1,1]`
+2. The number of items ordered(>10000) for each aisle is pretty evenly distributed. Aisle fresh vegetables and fresh fruits have the greatest number of ordered item, following packaged vegetables and fruits being the third most. 
+3. 
