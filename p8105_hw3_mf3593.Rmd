@@ -32,11 +32,11 @@ print(plot)
 item_table=data.frame(instacart)|>
   filter(aisle %in% c("dog food care","packaged vegetables fruits","baking ingredients"))|>
   group_by(aisle)|>
-  count(product_id,name="n_item")|>
+  count(product_name,name="n_item")|>
   arrange(aisle,desc(n_item))|>
   slice_head(n=3)|>
   pivot_wider(
-    id_cols=product_id,
+    id_cols=product_name,
     names_from=aisle,
     values_from=n_item,
     names_prefix="# of Items in "
@@ -61,6 +61,10 @@ knitr::kable(hour_table,digits=3)
 
 ```
 
-1. There are `r nrow(df_insta)` aisles and most items are ordered from aisle number `r df_insta[1,1]`
-2. The number of items ordered(>10000) for each aisle is pretty evenly distributed. Aisle fresh vegetables and fresh fruits have the greatest number of ordered item, following packaged vegetables and fruits being the third most. 
-3. 
+The dataset of instacart has `r nrow(instacart)` rows and `r ncol(instacart)` columns. It includes information on variables `r colnames(instacart)`. \
+1. There are `r nrow(df_insta)` aisles and most items are ordered from aisle number `r df_insta[1,1]` \
+2. The number of items ordered(>10000) for each aisle is pretty evenly distributed. Aisle fresh vegetables and fresh fruits have the greatest number of ordered item, following packaged vegetables and fruits being the third most. \
+3. The item_table shows top three ordered items' product_id in each aisle as well as the number of ordered items. We see that number of items ordered in dog food care is much less compared to aisle baking ingredient and packaged fruits and vegetables. The top three ordered items in aisle baking ingredients are `r list(item_table[1:3,1])`. The top three ordered items in aisle dog food care are `r list(item_table[4:6,1])`. The top three ordered items in aisle packaged vegetables and fruits are `r list(item_table[7:9,1])`. \
+4. The hour_table shows mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. Coffee ice cream appears to have a later order hour of the day compared to pink lady apples. The mean order hour of day for both products fall between 11 to 15. 
+
+
