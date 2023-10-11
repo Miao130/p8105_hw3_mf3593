@@ -4,10 +4,11 @@ author: "Miao Fu"
 date: "2023-10-11"
 output: html_document
 ---
-```{r}
+```{r,message=FALSE}
 library(dplyr)
 library(ggridges)
 library(tidyverse)
+library(knitr)
 ```
 
 ```{r}
@@ -26,7 +27,16 @@ plot=df_insta|>
   theme_bw()
 print(plot)
 
-
+table=data.frame(instacart)|>
+  filter(aisle %in% c("dog food care","packaged vegetables fruits","baking ingredients"))|>
+  group_by(aisle)|>
+  count(product_id,name="n_item")|>
+  arrange(aisle,desc(n_item))|>
+  slice_head(n=3)|>
+  rename("Aisle"="aisle",
+         "Product ID"="product_id",
+         "Number of Items"="n_item")
+knitr::kable(table,digits=0)
 ```
 
 1. There are `r nrow(df_insta)` aisles and most items are ordered from aisle number `r df_insta[1,1]`
