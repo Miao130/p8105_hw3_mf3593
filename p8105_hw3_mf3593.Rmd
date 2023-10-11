@@ -4,5 +4,29 @@ author: "Miao Fu"
 date: "2023-10-11"
 output: html_document
 ---
+```{r}
+library(dplyr)
+library(ggridges)
+library(tidyverse)
+```
+
+```{r}
+library(p8105.datasets)
+data("instacart") 
+df_insta=data.frame(instacart)|>
+  group_by(aisle_id)|>
+  summarize(n_obs=n())|>
+  arrange(desc(n_obs))
+
+plot=df_insta|>
+  filter(n_obs>10000)|>
+  ggplot(aes(x=aisle_id,y=n_obs))+geom_point()+
+  xlab("Aisle Id") +
+  ylab("Number of items") +
+  theme_bw()
+print(plot)
 
 
+```
+
+1. There are `r nrow(df_insta)` aisles and most items are ordered from aisle number `r df_insta[1,1]`
