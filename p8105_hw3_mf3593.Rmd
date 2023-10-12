@@ -4,32 +4,42 @@ author: "Miao Fu"
 date: "2023-10-11"
 output: html_document
 ---
-```{r,message=FALSE}
+```{r,include=FALSE}
 library(dplyr)
 library(ggridges)
 library(tidyverse)
 library(knitr)
+library(p8105.datasets)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	error=FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "100%"
+)
+
 ```
 
 # Problem 1
 
-```{r,message=FALSE,out.width="100%"}
-library(p8105.datasets)
+```{r}
 data("instacart") 
 df_insta=data.frame(instacart)|>
   group_by(aisle)|>
   summarize(n_obs=n())|>
   arrange(desc(n_obs))
 
-plot=df_insta|>
+df_insta|>
   filter(n_obs>10000)|>
   ggplot(aes(x=aisle,y=n_obs))+geom_point()+
   xlab("Aisle") +
   ylab("Number of ordered items") +
   theme(axis.text.x=element_text(angle=70,hjust=1))
-print(plot)
 
-item_table=data.frame(instacart)|>
+
+data.frame(instacart)|>
   filter(aisle %in% c("dog food care","packaged vegetables fruits","baking ingredients"))|>
   group_by(aisle)|>
   count(product_name,name="n_item")|>
@@ -40,10 +50,10 @@ item_table=data.frame(instacart)|>
     names_from=aisle,
     values_from=n_item,
     names_prefix="# of Items in "
-  )
-knitr::kable(item_table,digits=0)
+  )|>
+  knitr::kable(digits=0)
 
-hour_table=data.frame(instacart)|>
+data.frame(instacart)|>
   filter(product_name %in% c("Pink Lady Apples","Coffee Ice Cream"))|>
   arrange(product_name,order_dow,order_hour_of_day)|>
   group_by(product_name,order_dow)|>
@@ -56,15 +66,66 @@ hour_table=data.frame(instacart)|>
     values_from=mean_hour,
     names_prefix="Mean order hour of day of "
   )|>
-  rename("Day of Week"="order_dow")
-knitr::kable(hour_table,digits=3)
+  rename("Day of Week"="order_dow")|>
+  knitr::kable(digits=3)
 
 ```
 
 The dataset of instacart has `r nrow(instacart)` rows and `r ncol(instacart)` columns. It includes information on variables `r colnames(instacart)`. \
 1. There are `r nrow(df_insta)` aisles and most items are ordered from aisle number `r df_insta[1,1]` \
 2. The number of items ordered(>10000) for each aisle is pretty evenly distributed. Aisle fresh vegetables and fresh fruits have the greatest number of ordered item, following packaged vegetables and fruits being the third most. \
-3. The item_table shows top three ordered items' product_id in each aisle as well as the number of ordered items. We see that number of items ordered in dog food care is much less compared to aisle baking ingredient and packaged fruits and vegetables. The top three ordered items in aisle baking ingredients are `r list(item_table[1:3,1])`. The top three ordered items in aisle dog food care are `r list(item_table[4:6,1])`. The top three ordered items in aisle packaged vegetables and fruits are `r list(item_table[7:9,1])`. \
+3. The item_table shows top three ordered items' product_id in each aisle as well as the number of ordered items. We see that number of items ordered in dog food care is much less compared to aisle baking ingredient and packaged fruits and vegetables. \
 4. The hour_table shows mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. Coffee ice cream appears to have a later order hour of the day compared to pink lady apples. The mean order hour of day for both products fall between 11 to 15. 
 
+# Problem 2 
 
+```{r}
+data("brfss_smart2010")
+df_brfss=data.frame(brfss_smart2010)|>
+  janitor::clean_names()|>
+  filter(topic=="Overall Health" & response %in% c("Excellent","Very good","Good","Fair","Poor"))|>
+  mutate(response_fac=factor(response,levels=c("Poor","Fair","Good","Very good","Excellent")))|>
+  select(-response)
+
+location2002=df_brfss|>
+  filter(year==2002)|>
+  group_by(locationabbr)|>
+  summarize(n_obs=n_distinct(geo_location))|>
+  filter(n_obs>=7)
+
+location2010=df_brfss|>
+  filter(year==2010)|>
+  group_by(locationabbr)|>
+  summarize(n_obs=n_distinct(geo_location))|>
+  filter(n_obs>=7)
+```
+1. The following states were observed at 7 or more locations in 2002:`r pull(location2002,locationabbr)` The following states were observed at 7 or more locations in 2010:`r pull(location2010,locationabbr)`.
+```{r}
+
+df_brfss|>
+  filter(response_fac=="Excellent")|>
+  select(year,locationabbr,response_fac,data_value,geo_location)|>
+  group_by(locationabbr,year)|>
+  summarize(mean=mean(data_value,na.rm=TRUE))|>
+  ggplot(aes(x=year,y=mean,group=locationabbr,color=locationabbr))+geom_line()+
+  labs(
+    title="Average Data Value Across Year Per State",
+    x="Year",
+    y="Average Data Value"
+  )+
+  theme_bw()
+```
+The mean for `data_value` distribution for each state from year 2002 to 2010 falls generally between 15 to 30. We see a relative decrease of mean `data_value` for the year of 2005 for most states. But overall the `data_value` fluctuates around 23. 
+```{r}
+df_brfss|>
+  filter(locationabbr=="NY" & year %in%c(2006,2010))|>
+  ggplot(aes(x=response_fac,y=data_value))+geom_boxplot()+facet_grid(~year)+
+  labs(
+    title="Data Value distribution for responses in NY",
+    x="Response",
+    y="Data Value"
+  )+
+  theme_bw()
+```
+
+According to the graph `Data Value distribution for response in NY`, distribution of data value among responses are similar for year 2006 and 2010. 2010 has slightly more people who responded `very good` compared to year 2006. Overall, response `very good` and `good` have the highest data values and `poor` has the lowest data values in NY state for both 2006 and 2010. 
