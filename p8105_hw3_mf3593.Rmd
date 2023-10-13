@@ -152,13 +152,59 @@ demo_df=read_csv("nhanes_covar.csv",skip=4)|>
   )
 
 acc_df=read_csv("nhanes_accel.csv")|>
-  janitor::clean_names()
+  janitor::clean_names()|>
+   pivot_longer(
+    min1:min1440,
+    names_to="time",
+    values_to="mims")
 
 combined_df=demo_df|>
-  full_join(acc_df)|>
-  filter(!is.na(sex)|!is.na(age)|!is.na(bmi)|!is.na(education))
-  
+  left_join(acc_df)
 
-
+combined_df|>
+  group_by(education,sex)|>
+  summarize(n_obs=n_distinct(seqn))|>
+  pivot_wider(
+    names_from="sex",
+    values_from="n_obs",
+    id_cols="education"
+  )|>
+  knitr::kable()
 ```
+There are more male with high school equivalent background than female. There are roughly same number of males and females with education less than high school. There are slightly more female than male with education more than high school. Most females and males have education more than high school. 
+
+```{r}
+combined_df|>
+  group_by(seqn)|>
+  summarise(mims_total=sum(mims))|>
+  right_join(demo_df)|>
+  ggplot(aes(x=age,y=mims_total))+geom_point(aes(color=sex))+
+  geom_smooth(aes(color=sex),se=FALSE)+
+  facet_grid(~education)+
+  labs(
+    title="Total MIMS activity across age and education level",
+    x="AGE",
+    y="MIMS value"
+  )
+```
+The plot shows the MIMS total activity across age and education level for females and males. The data is quite spread out. We see mean MIMS value are roughly same for people from all three education levels. Females tend to have slightly higher MIMS value compared to males. MIMS seems to decrease as increase of age for both men and women in all three education levels. 
+
+```{r}
+combined_df|>
+  mutate(time=as.numeric(gsub("min","",time)))|>
+  group_by(education,time,sex)|>
+  summarise(mims_day=sum(mims))|>
+  ggplot(aes(x=time,y=mims_day))+geom_point(aes(color=sex))+
+  facet_grid(~education)+
+  geom_smooth()+
+  labs(
+    x="Minute of 24 hours",
+    y="MIMS value",
+    title="24-hour activity for different education level"
+  )+
+  theme(axis.text.x=element_text(angle=90,hjust=1))
+  
+```
+The graph shows the trend of 24-hour MIMS activity for different education levels among female and male subjects. MIMS value of subjects from more than high school background has a much higher MIMS value than subjects from high school equivalent and less than high school backgrounds.For all subjects across three education levels, the MIMS value decreases first from minute 1 to minute 250 and then increase till reaching a plateu at around minute 500, then decrease at around minute1250. Female and male share similar MIMS activity across 24 hours. 
+
 
