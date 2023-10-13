@@ -160,6 +160,7 @@ acc_df=read_csv("nhanes_accel.csv")|>
     values_to="mims")
 
 combined_df=demo_df|>
+  na.omit()|>
   left_join(acc_df)
 
 combined_df|>
@@ -172,7 +173,7 @@ combined_df|>
   )|>
   knitr::kable()
 ```
-The table describes numbers of female and male at different education level. There are more male with high school equivalent background than female. There are roughly same number of males and females with education less than high school. There are slightly more female than male with education more than high school. Most females and males have education more than high school. 
+The table describes numbers of female and male at different education level. There are more male with high school equivalent background than female. There are roughly same number of males and females with education less than high school and more than high school. Most females and males have education more than high school. 
 
 ```{r}
 combined_df|>
