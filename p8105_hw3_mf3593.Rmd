@@ -111,7 +111,7 @@ df_brfss|>
   )+
   theme_bw()
 ```
-The mean for `data_value` distribution for each state from year 2002 to 2010 falls generally between 15 to 30. We see a relative decrease of mean `data_value` for the year of 2005 for most states. But overall the `data_value` fluctuates around 23. 
+The graph `Average Data Value Across Year Per State` has `Year` on the x-axis from 2002 to 2010 and `Average Data Value` on the y-axis. Different colors of lines represents a different `state`. The mean for `data_value` distribution for each state from year 2002 to 2010 falls generally between 15 to 30. We see a relative decrease of mean `data_value` for the year of 2005 for most states. But overall the `data_value` fluctuates around 23. 
 ```{r}
 df_brfss|>
   filter(locationabbr=="NY" & year %in%c(2006,2010))|>
@@ -128,7 +128,7 @@ df_brfss|>
         axis.text.x=element_text(angle=90,hjust=1))
 ```
 
-According to the graph `Data Value distribution for response in NY`, distribution of data value among responses are similar for year 2006 and 2010. 2010 has slightly more people who responded `very good` compared to year 2006. Overall, response `very good` and `good` have the highest data values and `poor` has the lowest data values in NY state for both 2006 and 2010. 
+The histogram describes data value distribution for responses at different locations in NY in the year 2006 and 2010. The x-axis depicts different `Location` and y-axis is `Data Value`. According to the graph `Data Value distribution for response in NY`, there is no record of distribution of data value among responses in 2016 at location Bronx County, Erie County and Monroe County which are included in 2010. 2010 has slightly higher data value for the reponse `very good` across different locations compared to year 2006. Overall, response `very good` and `good` have the highest data values and `poor` has the lowest data values in NY state in both year 2006 and 2010. 
 
 # Problem 3
 ```{r}
@@ -148,7 +148,7 @@ demo_df=read_csv("nhanes_covar.csv",skip=4)|>
       2 ~ "High school equivalent",
       3 ~ "More than high school"
     ),
-    education=as.factor(education)
+    education=factor(education,levels=c("Less than high school","High school equivalent","More than high school"))
   )
 
 acc_df=read_csv("nhanes_accel.csv")|>
@@ -171,7 +171,19 @@ combined_df|>
   )|>
   knitr::kable()
 ```
-There are more male with high school equivalent background than female. There are roughly same number of males and females with education less than high school. There are slightly more female than male with education more than high school. Most females and males have education more than high school. 
+The table describes numbers of female and male at different education level. There are more male with high school equivalent background than female. There are roughly same number of males and females with education less than high school. There are slightly more female than male with education more than high school. Most females and males have education more than high school. 
+
+```{r}
+combined_df|>
+  group_by(education,sex,age)|>
+  ggplot(aes(x=education,y=age))+geom_boxplot(aes(fill=sex))+
+  labs(
+    title="Age Distribution for Men and Women across Education Leveles",
+    x="Education Level",
+    y="Age"
+  )
+```
+The box plot `Age Distribution for Men and Women across Education Levels` has `Education Level` on x-axis and `Age` on y-axis. Two different colors of box denotes two `sex`. We can see median age for both men and women with more than highs school education background is lower than that for the other two education categories. We see all three education levels have age distribution with similar range for men and women. Education level `Less than high school` seems to have a slightly smaller range for age distribution. Between two sex, women in `high school equivalen` and `less than high school` categories tend to have greater median age than men in the same category. In `More than high school` category, both men and women have similar age distribution. 
 
 ```{r}
 combined_df|>
@@ -187,7 +199,7 @@ combined_df|>
     y="MIMS value"
   )
 ```
-The plot shows the MIMS total activity across age and education level for females and males. The data is quite spread out. We see mean MIMS value are roughly same for people from all three education levels. Females tend to have slightly higher MIMS value compared to males. MIMS seems to decrease as increase of age for both men and women in all three education levels. 
+The plot shows the `MIMS total activity across age and education level` for females and males. The x-axis is `age` and y-axis is `MIMS value`. Two different colors of points denote two `sex`. The data is quite spread out. We see mean MIMS value are roughly same for people from all three education levels. Females tend to have slightly higher MIMS value compared to males. MIMS seems to decrease as increase of age for both men and women in all three education levels. 
 
 ```{r}
 combined_df|>
@@ -205,6 +217,6 @@ combined_df|>
   theme(axis.text.x=element_text(angle=90,hjust=1))
   
 ```
-The graph shows the trend of 24-hour MIMS activity for different education levels among female and male subjects. MIMS value of subjects from more than high school background has a much higher MIMS value than subjects from high school equivalent and less than high school backgrounds.For all subjects across three education levels, the MIMS value decreases first from minute 1 to minute 250 and then increase till reaching a plateu at around minute 500, then decrease at around minute1250. Female and male share similar MIMS activity across 24 hours. 
+The graph shows the trend of `24-hour MIMS activity for different education levels` among female and male subjects. The x-axis is `Minute of 24 hours` and y-axis is `MIMS value`. Two different colored lines denote two `sex`. MIMS value of subjects from more than high school background has a much higher MIMS value than subjects from high school equivalent and less than high school backgrounds.For all subjects across three education levels, the MIMS value decreases first from minute 1 to minute 250 and then increase till reaching a plateau at around minute 500, then decrease at around minute1250. Female and male share similar MIMS activity across 24 hours. 
 
 
