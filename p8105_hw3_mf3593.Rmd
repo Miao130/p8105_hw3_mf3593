@@ -39,19 +39,14 @@ df_insta|>
   theme(axis.text.x=element_text(angle=70,hjust=1))
 
 
-data.frame(instacart)|>
-  filter(aisle %in% c("dog food care","packaged vegetables fruits","baking ingredients"))|>
-  group_by(aisle)|>
-  count(product_name,name="n_item")|>
-  arrange(aisle,desc(n_item))|>
-  slice_head(n=3)|>
-  pivot_wider(
-    id_cols=product_name,
-    names_from=aisle,
-    values_from=n_item,
-    names_prefix="# of Items in "
-  )|>
-  knitr::kable(digits=0)
+data.frame(instacart) |> 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) |>
+  group_by(aisle) |> 
+  count(product_name) |> 
+  mutate(rank = min_rank(desc(n))) |> 
+  filter(rank < 4) |> 
+  arrange(desc(n)) |>
+  knitr::kable()
 
 data.frame(instacart)|>
   filter(product_name %in% c("Pink Lady Apples","Coffee Ice Cream"))|>
@@ -105,9 +100,10 @@ location2010=df_brfss|>
 df_brfss|>
   filter(response_fac=="Excellent")|>
   select(year,locationabbr,response_fac,data_value,geo_location)|>
-  group_by(locationabbr,year)|>
+  rename("state"="locationabbr")|>
+  group_by(state,year)|>
   summarize(mean=mean(data_value,na.rm=TRUE))|>
-  ggplot(aes(x=year,y=mean,group=locationabbr,color=locationabbr))+geom_line()+
+  ggplot(aes(x=year,y=mean,group=state,color=state))+geom_line()+
   labs(
     title="Average Data Value Across Year Per State",
     x="Year",
@@ -119,13 +115,50 @@ The mean for `data_value` distribution for each state from year 2002 to 2010 fal
 ```{r}
 df_brfss|>
   filter(locationabbr=="NY" & year %in%c(2006,2010))|>
-  ggplot(aes(x=response_fac,y=data_value))+geom_boxplot()+facet_grid(~year)+
+  ggplot(aes(x=locationdesc,y=data_value,fill=response_fac))+
+  geom_bar(stat="identity",position="dodge")+
+  facet_grid(~year)+
   labs(
     title="Data Value distribution for responses in NY",
-    x="Response",
-    y="Data Value"
+    x="Location",
+    y="Data Value",
+    fill="Response"
   )+
-  theme_bw()
+  theme(legend.position="bottom",
+        axis.text.x=element_text(angle=90,hjust=1))
 ```
 
 According to the graph `Data Value distribution for response in NY`, distribution of data value among responses are similar for year 2006 and 2010. 2010 has slightly more people who responded `very good` compared to year 2006. Overall, response `very good` and `good` have the highest data values and `poor` has the lowest data values in NY state for both 2006 and 2010. 
+
+# Problem 3
+```{r}
+demo_df=read_csv("nhanes_covar.csv",skip=4)|>
+  janitor::clean_names()|>
+  filter(age>=21)|>
+  mutate(
+    sex=case_match(
+      sex,
+      2 ~ "female",
+      1 ~ "male"
+    ),
+    sex=as.factor(sex),
+    education=case_match(
+      education,
+      1 ~ "Less than high school",
+      2 ~ "High school equivalent",
+      3 ~ "More than high school"
+    ),
+    education=as.factor(education)
+  )
+
+acc_df=read_csv("nhanes_accel.csv")|>
+  janitor::clean_names()
+
+combined_df=demo_df|>
+  full_join(acc_df)|>
+  filter(!is.na(sex)|!is.na(age)|!is.na(bmi)|!is.na(education))
+  
+
+
+```
+
