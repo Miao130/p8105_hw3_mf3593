@@ -97,7 +97,6 @@ location2010=df_brfss|>
 ```
 1. The following states were observed at 7 or more locations in 2002:`r pull(location2002,locationabbr)` The following states were observed at 7 or more locations in 2010:`r pull(location2010,locationabbr)`.
 ```{r}
-
 df_brfss|>
   filter(response_fac=="Excellent")|>
   select(year,locationabbr,response_fac,data_value,geo_location)|>
@@ -129,7 +128,7 @@ df_brfss|>
         axis.text.x=element_text(angle=90,hjust=1))
 ```
 
-The histogram describes data value distribution for responses at different locations in NY in the year 2006 and 2010. The x-axis depicts different locations and y-axis is "Data Value". According to the graph "Data Value distribution for response in NY", there is no record of distribution of data value among responses in 2016 at location Bronx County, Erie County and Monroe County which are included in 2010. 2010 has slightly higher data value for the response "very good" across different locations compared to year 2006. Overall, response "very good" and "good" have the highest data values and "poor" has the lowest data values in NY state in both year 2006 and 2010. 
+The histogram describes data value distribution for responses at different locations in NY in the year 2006 and 2010. The x-axis depicts different locations and y-axis is Data Value. According to the graph Data Value distribution for response in NY, there is no record of distribution of data value among responses in 2016 at location Bronx County, Erie County and Monroe County which are included in 2010. 2010 has slightly higher data value for the response "very good" across different locations compared to year 2006. Overall, response "very good" and "good" have the highest data values and "poor" has the lowest data values in NY state in both year 2006 and 2010. 
 
 # Problem 3
 ```{r}
@@ -219,6 +218,6 @@ combined_df|>
   theme(axis.text.x=element_text(angle=90,hjust=1))
   
 ```
-The graph shows the trend of 24-hour MIMS activity for different education levels among female and male subjects. The x-axis is "Minute of 24 hours" and y-axis is "MIMS value". Two different colored lines denote two sex. MIMS value of subjects from more than high school background has a much higher MIMS value than subjects from high school equivalent and less than high school backgrounds.For all subjects across three education levels, the MIMS value decreases first from minute 1 to minute 250 and then increase till reaching a plateau at around minute 500, then decrease at around minute1250. Female and male share similar MIMS activity across 24 hours. 
+The graph shows the trend of 24-hour MIMS activity for different education levels. The x-axis is "Minute of 24 hours" and y-axis is "MIMS value". Two different colored lines denote two sex. MIMS value of subjects from more than high school background has a much higher MIMS value than subjects from high school equivalent and less than high school backgrounds.For all subjects across three education levels, the MIMS value decreases first from minute 1 to minute 250 and then increase till reaching a plateau at around minute 500, then decrease at around minute1250. Female and male share similar MIMS activity across 24 hours. 
 
 
