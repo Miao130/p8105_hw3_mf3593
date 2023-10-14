@@ -127,7 +127,7 @@ df_brfss|>
         axis.text.x=element_text(angle=90,hjust=1))
 ```
 
-The bar plot describes data value distribution for responses in NY in the year 2006 and 2010. The x-axis depicts different responses and y-axis is data value. The distribution in two years look similar. Both have most data value in response "Very good" following "Good". Both have lowest data value in response "poor". 2010 has slightly higher data value for "Very good" and "Excellent". 
+The barplot describes data value distribution for responses in NY in the year 2006 and 2010. The x-axis depicts different responses and y-axis is data value. The distribution in two years look similar. Both have most data value in response "Very good" following "Good". Both have lowest data value in response "poor". 2010 has slightly higher data value for "Very good" and "Excellent". 
 
 # Problem 3
 ```{r}
