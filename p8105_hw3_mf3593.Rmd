@@ -115,20 +115,19 @@ The graph Average Data Value Across Year Per State has Year on the x-axis from 2
 ```{r}
 df_brfss|>
   filter(locationabbr=="NY" & year %in%c(2006,2010))|>
-  ggplot(aes(x=locationdesc,y=data_value,fill=response_fac))+
-  geom_bar(stat="identity",position="dodge")+
+  ggplot(aes(x=response_fac,y=data_value))+
+  geom_boxplot()+
   facet_grid(~year)+
   labs(
     title="Data Value distribution for responses in NY",
-    x="Location",
-    y="Data Value",
-    fill="Response"
+    x="Response",
+    y="Data Value"
   )+
   theme(legend.position="bottom",
         axis.text.x=element_text(angle=90,hjust=1))
 ```
 
-The histogram describes data value distribution for responses at different locations in NY in the year 2006 and 2010. The x-axis depicts different locations and y-axis is Data Value. According to the graph Data Value distribution for response in NY, there is no record of distribution of data value among responses in 2016 at location Bronx County, Erie County and Monroe County which are included in 2010. 2010 has slightly higher data value for the response "very good" across different locations compared to year 2006. Overall, response "very good" and "good" have the highest data values and "poor" has the lowest data values in NY state in both year 2006 and 2010. 
+The bar plot describes data value distribution for responses in NY in the year 2006 and 2010. The x-axis depicts different responses and y-axis is data value. The distribution in two years look similar. Both have most data value in response "Very good" following "Good". Both have lowest data value in response "poor". 2010 has slightly higher data value for "Very good" and "Excellent". 
 
 # Problem 3
 ```{r}
