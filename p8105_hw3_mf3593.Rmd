@@ -149,7 +149,8 @@ demo_df=read_csv("nhanes_covar.csv",skip=4)|>
       3 ~ "More than high school"
     ),
     education=factor(education,levels=c("Less than high school","High school equivalent","More than high school"))
-  )
+  )|>
+  na.omit()
 
 acc_df=read_csv("nhanes_accel.csv")|>
   janitor::clean_names()|>
@@ -159,7 +160,6 @@ acc_df=read_csv("nhanes_accel.csv")|>
     values_to="mims")
 
 combined_df=demo_df|>
-  na.omit()|>
   left_join(acc_df)
 
 combined_df|>
@@ -198,7 +198,8 @@ combined_df|>
     title="Total MIMS activity across age and education level",
     x="AGE",
     y="MIMS value"
-  )
+  )+
+  theme(legend.position="bottom")
 ```
 The plot shows the MIMS total activity across age and education level for females and males. The x-axis is age and y-axis is MIMS value. Two different colors of points denote two sex. The data is quite spread out. We see mean MIMS value are roughly same for people from all three education levels. Females tend to have slightly higher MIMS value compared to males. MIMS seems to decrease as increase of age for both men and women in all three education levels. 
 
