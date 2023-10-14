@@ -207,7 +207,7 @@ The plot shows the MIMS total activity across age and education level for female
 combined_df|>
   mutate(time=as.numeric(gsub("min","",time)))|>
   group_by(education,time,sex)|>
-  summarise(mims_day=sum(mims))|>
+  summarise(mims_day=mean(mims))|>
   ggplot(aes(x=time,y=mims_day))+geom_point(aes(color=sex))+
   facet_grid(~education)+
   geom_smooth()+
@@ -217,8 +217,7 @@ combined_df|>
     title="24-hour activity for different education level"
   )+
   theme(axis.text.x=element_text(angle=90,hjust=1))
-  
 ```
-The graph shows the trend of 24-hour MIMS activity for different education levels. The x-axis is "Minute of 24 hours" and y-axis is "MIMS value". Two different colored lines denote two sex. MIMS value of subjects from more than high school background has a much higher MIMS value than subjects from high school equivalent and less than high school backgrounds.For all subjects across three education levels, the MIMS value decreases first from minute 1 to minute 250 and then increase till reaching a plateau at around minute 500, then decrease at around minute1250. Female and male share similar MIMS activity across 24 hours. 
+The graph shows the trend of 24-hour MIMS activity for different education levels. The x-axis is "Minute of 24 hours" and y-axis is "MIMS value". Two different colored lines denote two sex. The graph takes mean MIMS value for each sex in each education category per minute in a 24-hour day. MIMS value of subjects from more than high school background has a much higher MIMS value than subjects from high school equivalent and less than high school backgrounds.For all subjects across three education levels, the MIMS value decreases first from minute 1 to minute 250 and then increase till reaching a plateau at around minute 500, then decrease at around minute1250. Female and male share similar MIMS activity across 24 hours. 
 
 
